@@ -108,7 +108,7 @@ display_name: Tavily网络搜索
 description: 使用 Tavily API 进行网络搜索。插件调用方式（JSON 格式）：{"query":"搜索关键词","search_depth":"basic"}\nsearch_depth可选basic 或 advanced，默认 basic。返回结果包含标题、摘要和来源链接，最多返回 5 条结果。
 ```
 
-插件目录下的示例插件可用于参考。重启 agent.py 后插件会自动加载
+插件目录下的示例插件可用于参考。重启之后插件会自动加载
 
 
 

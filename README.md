@@ -91,6 +91,8 @@ py-legnatest/
 - `display_name` - 插件的简略描述，如：获取北京时间
 - `description` - 插件的详细说明，包含功能介绍、调用方式、返回值等等
 
+程序启动时，这些插件函数会自动注册。
+
 当 AI 需要使用某个插件的时候，程序会执行插件`main.py`内的`tool_main`函数。
 
 这个函数必须接受1个字典形式的参数输入，该参数包含了插件所需的所有信息，如：
@@ -108,7 +110,7 @@ display_name: Tavily网络搜索
 description: 使用 Tavily API 进行网络搜索。插件调用方式（JSON 格式）：{"query":"搜索关键词","search_depth":"basic"}\nsearch_depth可选basic 或 advanced，默认 basic。返回结果包含标题、摘要和来源链接，最多返回 5 条结果。
 ```
 
-插件目录下的示例插件可用于参考。重启之后插件会自动加载。
+插件目录下的示例插件可用于参考。
 
 
 

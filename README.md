@@ -89,7 +89,7 @@ py-legnatest/
 - `requirements.txt` - 依赖（可选）
 其中，`description.yaml`里面有两个参数：
 - `display_name` - 插件的简略描述，如：获取北京时间
-- `description` - 插件的详细说明，包含功能介绍、调用方式、返回值等等，如：获取当前北京时间。调用方式：{}（无需参数，直接调用即可）。返回当前日期和时间，格式为 YYYY-MM-DD HH:MM:SS，例如：2026-03-11 01:00:00
+- `description` - 插件的详细说明，包含功能介绍、调用方式、返回值等等
 
 当 AI 需要使用某个插件的时候，会执行插件`main.py`内的`tool_main`函数。
 

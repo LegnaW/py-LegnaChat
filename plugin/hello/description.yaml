@@ -1,0 +1,2 @@
+display_name: 测试插件，返回 Hello 消息
+description: 这是一个测试插件，返回 Hello 消息。具体调用方式：参数使用json传入，格式为 {"name":"用户的名字"}。其中“用户的名字”你可以随便写，程序会返回"hello 用户的名字"

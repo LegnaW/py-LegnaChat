@@ -1,0 +1,5 @@
+这是一个覆写后的测试文件。
+由LegnaChat在ai-programs目录下创建。
+当前时间：文件已成功覆写。
+文件位置：d:\py-legnachat\ai-programs\test_file.txt
+覆写操作完成！

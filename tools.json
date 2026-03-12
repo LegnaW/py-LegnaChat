@@ -1,0 +1,123 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "execute_command",
+      "description": "执行控制台命令。\n该工具必须用户开放权限才可以执行。否则会返回“用户没有给你该操作的权限。”\n注意：你以最高权限运行在用户的电脑上，绝对绝对绝对不可以乱动用户的文件和数据，如果你要执行系统命令，必须要谨慎再谨慎，千万别不要随便写入或者删除文件，不能随便往用户的电脑里搞破坏扔垃圾！",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "要执行的命令行指令"
+          }
+        },
+        "required": ["command"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "write_file",
+      "description": "写入文件内容到指定路径。如果需要写入文件，优先用这个工具，而不是execute_command。\n该工具必须用户开放权限才可以执行。否则会返回“用户没有给你该操作的权限。\n注意：绝对绝对绝对不可以乱动用户的文件和数据，不能随便往用户的电脑里搞破坏扔垃圾！",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "写入内容（字符串）"
+          },
+          "path": {
+            "type": "string",
+            "description": "文件路径"
+          },
+          "mode": {
+            "type": "string",
+            "description": "写入方式（单个字符），可为w或者a，w表示直接覆写文件内容，a表示追加到文件末尾"
+          }
+        },
+        "required": ["content", "path"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "read_file",
+      "description": "读取指定文件的内容。如果需要读取文件，优先用这个工具，而不是execute_command。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "文件路径"
+          }
+        },
+        "required": ["path"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_skills",
+      "description": "列出项目 skill 文件夹中所有可用的技巧。返回每个技巧的简略描述和相对路径。",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "read_memory",
+      "description": "读取记忆内容，包含短期记忆和长期记忆",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "extensions_search",
+      "description": "查询某一项额外功能的详细使用方法，可输入某个额外功能插件的名称，查询该额外功能的详细描述，如发送参数为\"send_msg\"，则返回：\"向指定IP发送信息，调用方式： {\"url\":IP地址,\"message\":信息内容}\"",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "输入某一个额外功能插件name返回该插件的description"
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "extensions",
+      "description": "执行额外功能，请确保调用该tools前，已经使用 extensions_search 查询了对应功能的名称和调用方法",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "description": "额外功能名称"
+          },
+          "required_args": {
+            "type": "string",
+            "description": "额外功能所需的参数，JSON格式，如 {\"url\":\"127.0.0.1\",\"message\":\"ok\"}"
+          }
+        },
+        "required": ["tool_name", "required_args"]
+      }
+    }
+  }
+]

@@ -36,6 +36,7 @@ else:
 API_KEY = config.get("api", {}).get("key", "your-api-key")
 BASE_URL = config.get("api", {}).get("base_url", "https://api.deepseek.com/v1")
 MODEL = config.get("api", {}).get("model", "deepseek-chat")
+TOOL_OUTPUT_LENGTH = config.get("tool_output_length", 10000)
 TEMPERATURE = config.get("temperature", 0.7)
 SERVER_PORT = config.get("server_port", 9600)
 OPEN_BROWSER = config.get("open_browser", True)
@@ -273,6 +274,9 @@ def call_tool(tool_name, arguments):
     print(f"\n工具返回值:\n{result}")
     print("=" * 50 + "\n")
     
+    
+    if len(result) > TOOL_OUTPUT_LENGTH:
+        result = result[:TOOL_OUTPUT_LENGTH]+f"\n......\n输出太长（>{TOOL_OUTPUT_LENGTH}字符），已省略后续。"
     return result
 
 def format_system_prompt(prompt):

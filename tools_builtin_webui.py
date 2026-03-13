@@ -145,8 +145,6 @@ def execute_command(command):
         output = stdout
         if stderr:
             output += "\nSTDERR: " + stderr
-        if len(output) > 5000:
-            output = output[:5000]+"\n......\n输出太长（>5000字符），已省略后续。"
         return output if output.strip() else "执行完成（无输出）"
     except subprocess.TimeoutExpired:
         return "Error: 命令执行超时"

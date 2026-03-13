@@ -87,6 +87,66 @@ def read_latest_log():
             return f.read()
     return ""
 
+def parse_ai_response(response_text):
+    """
+    解析AI回复，提取思考片段和回复片段
+    
+    Args:
+        response_text (str): AI的完整回复字符串
+        
+    Returns:
+        list: [思考片段, 回复片段]，如果没有对应片段则为空字符串
+    """
+    # 初始化结果
+    think_content = ""
+    reply_content = ""
+    
+    # 查找思考片段的开始和结束位置
+    start_tag = "<think>"
+    end_tag = "</think>"
+    
+    start_pos = response_text.find(start_tag)
+    end_pos = response_text.find(end_tag)
+    
+    # 情况1：有完整的思考片段（同时存在开始和结束标签）
+    if start_pos != -1 and end_pos != -1 and end_pos > start_pos:
+        # 提取思考内容（不包括标签本身）
+        think_content = response_text[start_pos + len(start_tag):end_pos].strip()
+        
+        # 提取回复内容（思考片段之后的内容）
+        reply_content = response_text[end_pos + len(end_tag):].strip()
+        
+        # 如果思考片段之前还有内容（比如模型先回复再思考的情况，虽然少见，但做兼容处理）
+        if start_pos > 0:
+            before_think = response_text[:start_pos].strip()
+            if before_think:
+                # 如果思考前有内容，且思考后也有内容，则需要拼接
+                if reply_content:
+                    reply_content = before_think + "\n" + reply_content
+                else:
+                    reply_content = before_think
+    
+    # 情况2：只有开始标签但没有结束标签
+    elif start_pos != -1 and end_pos == -1:
+        # 从开始标签后到结尾都是思考内容
+        think_content = response_text[start_pos + len(start_tag):].strip()
+        # 开始标签前的内容作为回复
+        if start_pos > 0:
+            reply_content = response_text[:start_pos].strip()
+    
+    # 情况3：只有结束标签但没有开始标签
+    elif start_pos == -1 and end_pos != -1:
+        # 结束标签前的内容作为思考内容
+        think_content = response_text[:end_pos].strip()
+        # 结束标签后的内容作为回复
+        reply_content = response_text[end_pos + len(end_tag):].strip()
+    
+    # 情况4：没有找到任何标签
+    else:
+        reply_content = response_text.strip()
+    
+    return [think_content, reply_content]
+
 def init_session():
     """初始化会话：创建日志文件并总结短期记忆"""
     # 预先创建当前会话的历史日志文件
@@ -138,11 +198,11 @@ def summarize_short_memory(latest_log, short_memory):
         "Content-Type": "application/json"
     }
     
-    system_prompt = """你是一个专业的聊天记录总结程序。用户会为你提供两段内容：
-1. 之前的聊天内容总结
+    system_prompt = """你是一个专业的聊天记录总结程序，负责为大语言模型总结记忆。用户会为你提供两段内容：
+1. 之前的聊天内容的记忆总结
 2. 新的聊天记录
 
-你需要合并这两份信息，整合为一份新的总结。要求：
+你需要合并这两份信息，整合为一份新的记忆总结。要求：
 - 简明扼要，准确提炼关键信息
 - 600字以内，越精炼越好
 - 只输出总结内容，不要有其他任何文字"""
@@ -158,14 +218,16 @@ def summarize_short_memory(latest_log, short_memory):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
         ],
-        "temperature": 0.5
+        "temperature": 0.7
     }
     
     try:
-        response = requests.post(url, headers=headers, json=data, timeout=30)
+        response = requests.post(url, headers=headers, json=data, timeout=300)
         result = response.json()
         if "choices" in result and len(result["choices"]) > 0:
-            return result["choices"][0]["message"].get("content", "")
+            content = result["choices"][0]["message"].get("content", "")
+            chat = parse_ai_response(content)[1]
+            return chat
         else:
             return short_memory
     except Exception as e:
@@ -213,7 +275,12 @@ def call_tool(tool_name, arguments):
     
     return result
 
-
+def format_system_prompt(prompt):
+    prompt = prompt.replace("{extra_plugin_list}", extra_plugin_list)
+    prompt = prompt.replace("{system}", SYSTEM_NAME)
+    prompt = prompt.replace("{program_path}", SCRIPT_DIR)
+    prompt = prompt.replace("{skills_list}", SKILLS_LIST)
+    prompt = prompt.replace("{safe_path}", str(SAFE_PATH))
 # ========== 加载插件和技能 ==========
 print("正在加载插件...")
 tools_builtin.load_plugins()
@@ -363,9 +430,18 @@ def chat_fn(message, history):
                 #chat_messages.append(ChatMessage(role="user", content=message))
                 #yield chat_messages
                 if "content" in message_obj and message_obj["content"]:
+                    parse_result = parse_ai_response(ai_content)
+                    think,chat = parse_result[0],parse_result[1]
+                    if think != "":
+                        chat_messages.append(ChatMessage(
+                            role="assistant",
+                            content=think,
+                            metadata={"title": f"🤔 思考内容："}
+                        ))
+                    yield chat_messages
                     chat_messages.append(ChatMessage(
                         role="assistant",
-                        content= message_obj["content"],
+                        content= chat,
                         metadata={}
                     ))
                     yield chat_messages
@@ -442,9 +518,23 @@ def chat_fn(message, history):
         # 保存到日志
         save_log(message, ai_content)
         #print(f"API消息列表：{api_messages}")
-        
+        parse_result = parse_ai_response(ai_content)
+        think,chat = parse_result[0],parse_result[1]
+        if think != "":
+            chat_messages.append(ChatMessage(
+                role="assistant",
+                content=think,
+                metadata={"title": f"🤔 思考内容："}
+            ))
+        yield chat_messages
+        chat_messages.append(ChatMessage(
+            role="assistant",
+            content= chat,
+            metadata={}
+        ))
+        yield chat_messages
         # 只返回 AI 回复（用于显示）
-        chat_messages.append(ChatMessage(role="assistant", content=ai_content))
+        # chat_messages.append(ChatMessage(role="assistant", content=ai_content))
         
         # 调试：打印返回给 Gradio 的消息
         '''

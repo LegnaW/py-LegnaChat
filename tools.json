@@ -74,7 +74,7 @@
     "type": "function",
     "function": {
       "name": "read_memory",
-      "description": "读取记忆内容，包含短期记忆和长期记忆",
+      "description": "会话开始的时候使用，读取记忆内容，包含短期记忆和长期记忆",
       "parameters": {
         "type": "object",
         "properties": {},

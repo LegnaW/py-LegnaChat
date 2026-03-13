@@ -20,7 +20,7 @@
     "type": "function",
     "function": {
       "name": "write_file",
-      "description": "写入文件内容到指定路径。如果需要写入文件，优先用这个工具，而不是execute_command。\n该工具必须用户开放权限才可以执行。否则会返回“用户没有给你该操作的权限。\n注意：绝对绝对绝对不可以乱动用户的文件和数据，不能随便往用户的电脑里搞破坏扔垃圾！",
+      "description": "写入文件内容到指定路径。如果需要写入文件，优先用这个工具，而不是execute_command。\n该工具必须用户开放权限才可以执行。否则会返回“用户没有给你该操作的权限。需要3个参数：写入内容，文件路径，写入方式",
       "parameters": {
         "type": "object",
         "properties": {
@@ -34,7 +34,7 @@
           },
           "mode": {
             "type": "string",
-            "description": "写入方式（单个字符），可为w或者a，w表示直接覆写文件内容，a表示追加到文件末尾"
+            "description": "写入方式（单个字符），可为w或者a，w表示直接覆写文件内容，a表示追加到文件末尾，默认为w"
           }
         },
         "required": ["content", "path"]

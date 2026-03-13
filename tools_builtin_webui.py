@@ -143,7 +143,7 @@ def execute_command(command):
         traceback.print_exc()
         return f"Error: {str(e)}"
     
-def write_file(content, path, mode):
+def write_file(content, path, mode="w"):
     """写入文件内容到指定路径"""
     try:
         if mode in ["w","a"]:

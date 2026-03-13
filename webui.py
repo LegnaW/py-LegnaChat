@@ -188,7 +188,7 @@ def call_tool(tool_name, arguments):
             result = "用户没有给你控制台权限。"
     elif tool_name == "write_file":
         if ALLOW_DANGEROUS_OPERATION == True or is_path_inside_any_safe(arguments.get("path", ""),SAFE_PATH) == True:
-            result = tools_builtin.write_file(arguments.get("content", ""), arguments.get("path", ""), arguments.get("mode", ""))
+            result = tools_builtin.write_file(arguments.get("content", ""), arguments.get("path", ""), arguments.get("mode", "w"))
         else:
             result = f"用户没有给你操作这个目录的权限。你只能操作以下目录的文件：{SAFE_PATH}"
     elif tool_name == "extensions_search":

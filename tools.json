@@ -119,5 +119,17 @@
         "required": ["tool_name", "required_args"]
       }
     }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "extensions_reload",
+      "description": "重新加载所有额外的功能插件。当你修改了插件代码或新增插件后，使用此工具重新加载使更改生效。不要乱用，这个工具速度比较慢。",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
   }
 ]

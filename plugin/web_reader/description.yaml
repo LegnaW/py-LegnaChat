@@ -1,0 +1,2 @@
+display_name: 网页内容阅读器
+description: 使用 bs4 解析网页内容。插件调用方式（JSON 格式）：{"url":"网页URL","selector":"CSS选择器(可选)","max_length":"最大读取字符数(可选,默认2000)"}\n\n不传 selector 时默认提取正文文本。支持 CSS 选择器精确定位内容。

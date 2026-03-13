@@ -351,4 +351,12 @@ def get_all_plugins_list():
         result.append({plugin_key: plugin_info.get("display_name", plugin_key)})
     return str(result)
 
+def extensions_reload():
+    """重新加载所有插件"""
+    global PLUGINS
+    PLUGINS = {}
+    load_plugins()
+    plugin_list = get_all_plugins_list()
+    return f"✅ 插件已重新加载，当前插件列表如下: {plugin_list}"
+
 

@@ -203,6 +203,8 @@ def call_tool(tool_name, arguments):
         result = tools_builtin.read_memory()
     elif tool_name == "read_file":
         result = tools_builtin.read_file(arguments.get("path", ""))
+    elif tool_name == "extensions_reload":
+        result = tools_builtin.extensions_reload()
     else:
         result = f"Error: 未知工具: {tool_name}"
     

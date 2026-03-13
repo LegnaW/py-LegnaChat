@@ -144,7 +144,7 @@ def summarize_short_memory(latest_log, short_memory):
 
 你需要合并这两份信息，整合为一份新的总结。要求：
 - 简明扼要，准确提炼关键信息
-- 300字以内，越精炼越好
+- 600字以内，越精炼越好
 - 只输出总结内容，不要有其他任何文字"""
 
     user_prompt = f"""之前的内容总结：

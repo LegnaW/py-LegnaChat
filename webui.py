@@ -430,7 +430,7 @@ def chat_fn(message, history):
                 #chat_messages.append(ChatMessage(role="user", content=message))
                 #yield chat_messages
                 if "content" in message_obj and message_obj["content"]:
-                    parse_result = parse_ai_response(ai_content)
+                    parse_result = parse_ai_response(message_obj["content"])
                     think,chat = parse_result[0],parse_result[1]
                     if think != "":
                         chat_messages.append(ChatMessage(

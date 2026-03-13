@@ -8,7 +8,7 @@ api:
 
 # 安全路径配置（AI在不允许危险操作的情况下可写入文件的路径）
 # 若不改动则默认是AI的记忆目录、技巧目录、ai-programs目录。
-safe_path: []
+safe_path: ["./memory","./skill","./ai-programs"]
 
 # 端口配置，默认9600
 server_port: 9600

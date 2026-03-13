@@ -14,6 +14,7 @@ import yaml
 # 全局变量
 SCRIPT_DIR = None
 PLUGINS = {}  # 已加载的插件
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(SCRIPT_DIR, "config.yaml")
 if os.path.exists(CONFIG_PATH):
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:

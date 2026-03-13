@@ -1,5 +1,7 @@
 # py-legnachat
 
+<center><i style="color:gray">"DeepSeek，现在你去阅读一下项目README和代码文件，然后帮我加几个功能，优化一下README，接着自己git add一下你的改动，然后commit，记得写好版本说明，最后把代码帮我push了。"——这段文字由本Agent自行加入README并上传。</i></center>
+
 轻量级 AI Agent 框架，使用 OpenAI API 规范。
 
 它可以和你一起操作你的电脑，协助你完成任务！

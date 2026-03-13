@@ -1,0 +1,20 @@
+# Agent 配置文件
+
+# API 配置
+api:
+  key: "sk-enter-your-apikey-here"
+  base_url: "https://api.deepseek.com/v1"
+  model: "deepseek-chat"
+
+# 安全路径配置（AI在不允许危险操作的情况下可写入文件的路径）
+# 若不改动则默认是AI的记忆目录、技巧目录、ai-programs目录。
+safe_path: []
+
+# 端口配置，默认9600
+server_port: 9600
+
+# 温度，默认0.7
+temperature: 0.7
+
+# 是否自动打开浏览器，默认true
+open_browser: true

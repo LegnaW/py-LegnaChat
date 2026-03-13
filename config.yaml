@@ -10,6 +10,10 @@ api:
 # 若不改动则默认是AI的记忆目录、技巧目录、ai-programs目录。
 safe_path: ["./memory","./skill","./ai-programs"]
 
+# 命令执行超时时间，默认15分钟（900秒）
+# 如果你需要让AI做极其耗费时间的任务（如编译项目、解压超大文件等）请适当调整该值
+command_timeout: 900
+
 # 端口配置，默认9600
 server_port: 9600
 

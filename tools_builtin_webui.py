@@ -9,10 +9,19 @@ import os
 import importlib.util
 import subprocess
 import traceback
+import yaml
 
 # 全局变量
 SCRIPT_DIR = None
 PLUGINS = {}  # 已加载的插件
+CONFIG_PATH = os.path.join(SCRIPT_DIR, "config.yaml")
+if os.path.exists(CONFIG_PATH):
+    with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+else:
+    config = {}
+
+COMMAND_TIMEOUT = config.get("command_timeout", 900)
 
 def set_script_dir(dir_path):
     """设置脚本目录"""
@@ -65,7 +74,7 @@ def load_plugins():
                     ["pip", "install", "-r", req_file],
                     capture_output=True,
                     text=True,
-                    timeout=60
+                    timeout=999999
                 )
             except Exception as e:
                 print(f"安装插件 {plugin_name} 依赖失败: {e}")
@@ -125,7 +134,7 @@ def execute_command(command):
             command,
             shell=True,
             capture_output=True,
-            timeout=30
+            timeout=COMMAND_TIMEOUT
         )
         
         # 尝试多种编码：UTF-8 -> GBK -> GB2312

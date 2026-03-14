@@ -58,6 +58,35 @@ if SAFE_PATH == []:
 # 全局变量：默认不允许危险操作
 ALLOW_DANGEROUS_OPERATION = False
 RESET_AND_SUMMERY = False
+
+def register_env_variables():
+    """将配置变量注册为环境变量，方便插件读取"""
+    global ALLOW_DANGEROUS_OPERATION
+    
+    # API 配置
+    os.environ["LEGNA_API_KEY"] = API_KEY
+    os.environ["LEGNA_BASE_URL"] = BASE_URL
+    os.environ["LEGNA_MODEL"] = MODEL
+    
+    # 功能配置
+    os.environ["LEGNA_TOOL_OUTPUT_LENGTH"] = str(TOOL_OUTPUT_LENGTH)
+    os.environ["LEGNA_TEMPERATURE"] = str(TEMPERATURE)
+    os.environ["LEGNA_SERVER_PORT"] = str(SERVER_PORT)
+    os.environ["LEGNA_OPEN_BROWSER"] = str(OPEN_BROWSER)
+    
+    # 安全配置
+    os.environ["LEGNA_ALLOW_DANGEROUS_OPERATION"] = str(ALLOW_DANGEROUS_OPERATION).lower()
+    os.environ["LEGNA_SAFE_PATH"] = str(SAFE_PATH)
+    
+    # 目录配置
+    os.environ["LEGNA_SCRIPT_DIR"] = SCRIPT_DIR
+    os.environ["LEGNA_MEMORY_DIR"] = MEMORY_DIR
+    os.environ["LEGNA_LOG_DIR"] = LOG_DIR
+    os.environ["LEGNA_SKILL_DIR"] = SKILL_DIR
+
+# 注册环境变量
+register_env_variables()
+
 def get_current_session_log_path():
     """获取当前会话的历史日志文件路径"""
     global CURRENT_SESSION_LOG
@@ -325,6 +354,9 @@ else:
     with open(ALLOW_DANGEROUS_OPERATION_PATH, "w", encoding="utf-8") as f:
         f.write('false')
 
+# 更新环境变量
+os.environ["LEGNA_ALLOW_DANGEROUS_OPERATION"] = str(ALLOW_DANGEROUS_OPERATION).lower()
+
 
 # ========== 工具函数 ==========
 
@@ -345,6 +377,9 @@ def change_allow_dangerous_operation(arg):
         with open(ALLOW_DANGEROUS_OPERATION_PATH, "w", encoding="utf-8") as f:
             f.write('false')
         ALLOW_DANGEROUS_OPERATION = False
+    # 同步更新环境变量
+    os.environ["LEGNA_ALLOW_DANGEROUS_OPERATION"] = str(ALLOW_DANGEROUS_OPERATION).lower()
+    
 def is_path_inside_any_safe(target_path, base_paths):
     """
     判断路径是否安全
@@ -400,7 +435,7 @@ def chat_fn(message, history):
     }
     
     try:
-        response = requests.post(url, headers=headers, json=data, timeout=60)
+        response = requests.post(url, headers=headers, json=data, timeout=600)
         result = response.json()
         print(response.json())
     except Exception as e:

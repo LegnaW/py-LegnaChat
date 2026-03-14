@@ -1,0 +1,75 @@
+display_name: 持续性任务专用的控制台命令执行器（此时不要用自带的execute_command工具）
+description: |
+  增强版命令执行插件，支持长期任务管理、进程交互和进程树终止。
+  
+  ## 权限要求
+  需要设置环境变量：LEGNA_ALLOW_DANGEROUS_OPERATION=true
+  
+  ## 调用方式
+  
+  ### 1. 创建任务
+  ```json
+  {"mode": "create", "command": "要执行的命令"}
+  ```
+  **行为**：启动进程，30秒内完成则返回完整输出，否则返回PID和当前输出。自动创建日志文件并弹出终端窗口。
+  
+  **返回示例（运行中）**：
+  ```json
+  {
+    "pid": 12345,
+    "status": "running",
+    "output": "最近5000字输出...",
+    "log_file": "./ai-programs/task_logs/12345.log",
+    "ai_controls": {
+      "check": "{\"mode\": \"check\", \"pid\": 12345}",
+      "send": "{\"mode\": \"send\", \"pid\": 12345, \"command\": \"指令内容\"}",
+      "kill": "{\"mode\": \"kill\", \"pid\": 12345}"
+    }
+  }
+  ```
+  
+  ### 2. 查询任务
+  ```json
+  {"mode": "check", "pid": 12345}
+  ```
+  返回任务状态和最近5000字输出。
+  
+  ### 3. 发送指令
+  ```json
+  {"mode": "send", "pid": 12345, "command": "要发送的指令"}
+  ```
+  向运行中的任务发送指令。
+  
+  ### 4. 列出任务
+  ```json
+  {"mode": "list"}
+  ```
+  列出所有正在管理的任务。
+  
+  ### 5. 终止任务
+  ```json
+  {"mode": "kill", "pid": 12345}
+  ```
+  **强制终止整个进程树**（包含所有子进程）。
+  
+  ## 示例
+  
+  ```json
+  // 启动Minecraft服务器
+  {"mode": "create", "command": "cd /d D:\\papermc-test && java -jar paper-1.20.1-196.jar"}
+  
+  // 查询状态
+  {"mode": "check", "pid": 12345}
+  
+  // 发送游戏指令
+  {"mode": "send", "pid": 12345, "command": "say Hello from AI"}
+  
+  // 终止服务器
+  {"mode": "kill", "pid": 12345}
+  ```
+  
+  ## 关键特性
+  - 进程树终止：kill模式会终止整个进程树
+  - 自动弹窗：创建任务时自动显示日志窗口
+  - 实时日志：输出实时写入./ai-programs/task_logs/[PID].log
+  - 跨平台：Windows使用taskkill /T，Unix使用进程组

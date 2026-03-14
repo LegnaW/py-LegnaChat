@@ -6,6 +6,7 @@ import json
 import platform
 import signal
 from datetime import datetime
+import locale
 
 class TaskManager:
     """任务管理器"""
@@ -15,9 +16,13 @@ class TaskManager:
         self.lock = threading.Lock()
         self.output_buffer_size = 10000  # 输出缓冲区大小
         self.max_return_output = 5000    # 返回的最大输出长度
+        self.encoding = self._get_system_encoding()  # 系统编码
+        
+    def _get_system_encoding(self):
+        """获取系统默认编码"""
+        return locale.getpreferredencoding(False)
         
     def _check_permission(self):
-        """检查执行权限"""
         return os.environ.get("LEGNA_ALLOW_DANGEROUS_OPERATION") == "true"
     
     def _get_log_dir(self):
@@ -26,17 +31,35 @@ class TaskManager:
         os.makedirs(log_dir, exist_ok=True)
         return log_dir
     
+    
+    def _try_decode(self, data):
+        """尝试多种编码解码字节数据"""
+        if isinstance(data, str):
+            return data  # 已经是字符串
+        
+        encodings = [self.encoding, 'gbk', 'gb2312', 'cp936']
+        for enc in encodings:
+            try:
+                return data.decode(enc)
+            except (UnicodeDecodeError, AttributeError):
+                continue
+        # 所有编码都失败，用 errors='replace'
+        return data.decode(self.encoding, errors='replace')
+    
     def _read_output_thread(self, pid, process, log_file):
         """后台线程：读取进程输出"""
         try:
             with open(log_file, "a", encoding="utf-8") as log:
                 while True:
-                    # 读取一行输出
-                    line = process.stdout.readline()
-                    if not line and process.poll() is not None:
+                    # 读取一行输出（字节模式）
+                    line_bytes = process.stdout.readline()
+                    if not line_bytes and process.poll() is not None:
                         break  # 进程结束且无输出
                     
-                    if line:
+                    if line_bytes:
+                        # 解码（自动检测编码）
+                        line = self._try_decode(line_bytes)
+                        
                         # 写入日志文件
                         log.write(line)
                         log.flush()
@@ -161,6 +184,7 @@ class TaskManager:
         try:
             # 4. 启动进程
             # 根据系统设置进程组，以便 kill 时能杀死所有子进程
+            # 注意：不使用 text/encoding 参数，改用二进制模式自行解码
             if platform.system() == "Windows":
                 process = subprocess.Popen(
                     command,
@@ -168,10 +192,7 @@ class TaskManager:
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     stdin=subprocess.PIPE,
-                    text=True,
-                    bufsize=1,
-                    universal_newlines=True,
-                    encoding='utf-8'
+                    bufsize=1
                 )
             else:
                 # Unix: 创建新进程组
@@ -181,10 +202,7 @@ class TaskManager:
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     stdin=subprocess.PIPE,
-                    text=True,
                     bufsize=1,
-                    universal_newlines=True,
-                    encoding='utf-8',
                     start_new_session=True
                 )
             
@@ -315,8 +333,8 @@ class TaskManager:
                 }, ensure_ascii=False)
         
         try:
-            # 发送指令（添加换行符）
-            process.stdin.write(command + "\n")
+            # 发送指令（添加换行符）- 使用 UTF-8 编码
+            process.stdin.write((command + "\n").encode(self.encoding))
             process.stdin.flush()
             
             # 记录发送的指令到日志

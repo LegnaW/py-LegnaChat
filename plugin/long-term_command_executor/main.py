@@ -169,7 +169,7 @@ class TaskManager:
         if not self._check_permission():
             return json.dumps({
                 "error": "未授权执行危险操作",
-                "message": "请设置环境变量 LEGNA_ALLOW_DANGEROUS_OPERATION=true"
+                "message": "请确保用户已经给你授权了执行危险操作"
             }, ensure_ascii=False)
         
         # 2. 使用 PID 作为标识
